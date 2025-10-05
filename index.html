@@ -1,74 +1,65 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>SL YouTube Audio Player</title>
+    <style>
+        body { margin: 0; background: #000; }
+        #player { display: none; } /* 完全隐藏播放器 */
+    </style>
+</head>
 <body>
-  <div id="player"></div>
-  <script>
-    var player;
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('player', {
-        height: '0',  // 高度设为0，隐藏播放器
-        width: '0',
-        playerVars: {
-          listType: 'playlist',
-          list: 'RDSikaVj98eeQ', // 替换为您的播放列表ID
-          autoplay: 1,
-          controls: 0,
-          modestbranding: 1,
-          rel: 0
-        },
-        events: {
-          'onReady': onPlayerReady
+    <div id="player"></div>
+    
+    <script>
+        // 优先解析URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const cmd = urlParams.get('cmd');
+        const param = urlParams.get('param');
+        const videoId = urlParams.get('videoId') || 'SikaVj98eeQ'; // 默认视频ID
+        
+        let player;
+        
+        // 命令处理函数
+        function handleCommand() {
+            if (!player) return;
+            
+            switch(cmd) {
+                case 'play':
+                    player.playVideo();
+                    break;
+                case 'pause':
+                    player.pauseVideo();
+                    break;
+                case 'volume':
+                    player.setVolume(parseInt(param));
+                    break;
+                case 'load':
+                    player.loadVideoById(param);
+                    break;
+            }
         }
-      });
-    }
-    function onPlayerReady(event) {
-      event.target.playVideo(); // 自动播放
-      event.target.mute(); // 静音（避免浏览器自动播放限制）
-    }
-  </script>
-  <script src="https://www.youtube.com/iframe_api"></script>
-</body>
-</html><!DOCTYPE html>
-<html>
-<body>
-  <div id="player"></div>
-  <script>
-    var player;
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('player', {
-        height: '0',  // 高度设为0，隐藏播放器
-        width: '0',
-        playerVars: {
-          listType: 'playlist',
-          list: 'RDSikaVj98eeQ', // 替换为您的播放列表ID
-          autoplay: 1,
-          controls: 0,
-          modestbranding: 1,
-          rel: 0
-        },
-        events: {
-          'onReady': onPlayerReady
+        
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '0',
+                width: '0',
+                videoId: videoId, // 使用单视频模式
+                playerVars: {
+                    autoplay: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    mute: 1 // 初始静音避免自动播放限制
+                },
+                events: {
+                    'onReady': function(event) {
+                        // 自动播放已在参数设置
+                        handleCommand(); // 执行传入的命令
+                    }
+                }
+            });
         }
-      });
-    }
-    function onPlayerReady(event) {
-      event.target.playVideo(); // 自动播放
-      event.target.mute(); // 静音（避免浏览器自动播放限制）
-      // 添加在 onPlayerReady 函数内
-const urlParams = new URLSearchParams(window.location.search);
-const cmd = urlParams.get('cmd');
-const param = urlParams.get('param');
-
-if(cmd === 'play') player.playVideo();
-else if(cmd === 'pause') player.pauseVideo();
-else if(cmd === 'volume') player.setVolume(parseInt(param));
-else if(cmd === 'load') player.loadVideoById(param);
-    }
-    function updateStatus() {
-    document.title = "🎵 正在播放 | 音量: " + player.getVolume() + "%";
-}
-setInterval(updateStatus, 3000);
-  </script>
-  <script src="https://www.youtube.com/iframe_api"></script>
+    </script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
