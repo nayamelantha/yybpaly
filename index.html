@@ -54,7 +54,20 @@
     function onPlayerReady(event) {
       event.target.playVideo(); // 自动播放
       event.target.mute(); // 静音（避免浏览器自动播放限制）
+      // 添加在 onPlayerReady 函数内
+const urlParams = new URLSearchParams(window.location.search);
+const cmd = urlParams.get('cmd');
+const param = urlParams.get('param');
+
+if(cmd === 'play') player.playVideo();
+else if(cmd === 'pause') player.pauseVideo();
+else if(cmd === 'volume') player.setVolume(parseInt(param));
+else if(cmd === 'load') player.loadVideoById(param);
     }
+    function updateStatus() {
+    document.title = "🎵 正在播放 | 音量: " + player.getVolume() + "%";
+}
+setInterval(updateStatus, 3000);
   </script>
   <script src="https://www.youtube.com/iframe_api"></script>
 </body>
